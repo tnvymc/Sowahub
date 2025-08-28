@@ -1,158 +1,153 @@
--- Hizmetler
+-- Sowahub GUI - Tüm özellikler dahil
+
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
 
--- Ana GUI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.CoreGui
+-- GUI Oluştur
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.CoreGui
 
 -- Ana Frame
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 220, 0, 250)
-Frame.Position = UDim2.new(0.7, 0, 0.3, 0)
-Frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- mat siyah
-Frame.BorderSizePixel = 0
-Frame.Parent = ScreenGui
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 300, 0, 360)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -180)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Mat siyah
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
 
--- Kenar Yuvarlama
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 15)
-corner.Parent = Frame
+-- Üstte Yanıp Sönen Yazı
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundTransparency = 1
+title.Text = "Creator TikTok: sowahub"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.Parent = mainFrame
 
--- Başlık (Yanıp sönen)
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -40, 0, 30)
-Title.Position = UDim2.new(0, 10, 0, 5)
-Title.BackgroundTransparency = 1
-Title.Text = "Creator TikTok: sowahub"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextScaled = true
-Title.Parent = Frame
-
--- Yazının yanıp sönmesi
+-- Yanıp sönme efekti
 spawn(function()
-	while true do
-		TweenService:Create(Title, TweenInfo.new(0.8), {TextTransparency = 1}):Play()
-		wait(0.8)
-		TweenService:Create(Title, TweenInfo.new(0.8), {TextTransparency = 0}):Play()
-		wait(0.8)
-	end
-end)
-
--- Kapat Butonu (Üst sağ)
-local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -35, 0, 5)
-CloseButton.Text = "X"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-CloseButton.Parent = Frame
-local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(1, 0)
-closeCorner.Parent = CloseButton
-
--- Teleport Noktaları
-local tpPositions = {}
-
-local function createButton(text, positionY)
-	local btn = Instance.new("TextButton")
-	btn.Size = UDim2.new(1, -20, 0, 40)
-	btn.Position = UDim2.new(0, 10, 0, positionY)
-	btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	btn.Text = text
-	btn.Font = Enum.Font.SourceSansBold
-	btn.TextScaled = true
-	btn.Parent = Frame
-	local btnCorner = Instance.new("UICorner")
-	btnCorner.CornerRadius = UDim.new(0, 10)
-	btnCorner.Parent = btn
-	return btn
-end
-
-local SaveBtn = createButton("İşinlanma Noktası Kaydet", 50)
-local TPBtn = createButton("İşinlan", 100)
-
--- Speed ayarı
-local SpeedBox = Instance.new("TextBox")
-SpeedBox.Size = UDim2.new(1, -20, 0, 40)
-SpeedBox.Position = UDim2.new(0, 10, 0, 150)
-SpeedBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-SpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedBox.PlaceholderText = "Hız Gir (Varsayılan 16)"
-SpeedBox.Text = ""
-SpeedBox.Font = Enum.Font.SourceSansBold
-SpeedBox.TextScaled = true
-SpeedBox.Parent = Frame
-local speedCorner = Instance.new("UICorner")
-speedCorner.CornerRadius = UDim.new(0, 10)
-speedCorner.Parent = SpeedBox
-
--- Yuvarlak toggle butonu (Sowa Hub)
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Size = UDim2.new(0, 60, 0, 60)
-ToggleButton.Position = UDim2.new(0, 20, 0.8, 0)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-ToggleButton.Text = "Sowa\nHub"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextScaled = true
-ToggleButton.Parent = ScreenGui
-local toggleCorner = Instance.new("UICorner")
-toggleCorner.CornerRadius = UDim.new(1, 0)
-toggleCorner.Parent = ToggleButton
-
-local uiStroke = Instance.new("UIStroke")
-uiStroke.Thickness = 2
-uiStroke.Color = Color3.fromRGB(255, 255, 255)
-uiStroke.Parent = ToggleButton
-
--- Başlangıçta frame açık
-Frame.Visible = true
-
-ToggleButton.MouseButton1Click:Connect(function()
-	Frame.Visible = not Frame.Visible
-end)
-
--- Karakter alma
-local function getHRP()
-	local character = player.Character or player.CharacterAdded:Wait()
-	return character:WaitForChild("HumanoidRootPart")
-end
-
--- Teleport Kaydet
-SaveBtn.MouseButton1Click:Connect(function()
-	local hrp = getHRP()
-	tpPositions[1] = hrp.Position
-end)
-
--- Teleport
-TPBtn.MouseButton1Click:Connect(function()
-	if tpPositions[1] then
-		getHRP().CFrame = CFrame.new(tpPositions[1])
-	end
-end)
-
--- Speed Ayarlama
-SpeedBox.FocusLost:Connect(function()
-	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-	if humanoid then
-		local newSpeed = tonumber(SpeedBox.Text)
-		if newSpeed then
-			humanoid.WalkSpeed = newSpeed
-		else
-			humanoid.WalkSpeed = 16
-		end
-	end
+    while true do
+        TweenService:Create(title, TweenInfo.new(0.8), {TextTransparency = 1}):Play()
+        wait(0.8)
+        TweenService:Create(title, TweenInfo.new(0.8), {TextTransparency = 0}):Play()
+        wait(0.8)
+    end
 end)
 
 -- Kapat Butonu
-CloseButton.MouseButton1Click:Connect(function()
-	Frame.Visible = false
-	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-	if humanoid then
-		humanoid.WalkSpeed = 16
-	end
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(1, 0, 0, 30)
+closeBtn.Position = UDim2.new(0, 0, 1, -30)
+closeBtn.Text = "Kapat"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+closeBtn.Parent = mainFrame
+
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui.Enabled = false
+    humanoid.WalkSpeed = 16
+end)
+
+-- Speed Ayarı
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(1, 0, 0, 30)
+speedLabel.Position = UDim2.new(0, 0, 0, 40)
+speedLabel.Text = "Speed:"
+speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedLabel.BackgroundTransparency = 1
+speedLabel.Parent = mainFrame
+
+local speedBox = Instance.new("TextBox")
+speedBox.Size = UDim2.new(1, -20, 0, 30)
+speedBox.Position = UDim2.new(0, 0, 0, 70)
+speedBox.PlaceholderText = "Hızı Girin"
+speedBox.Text = ""
+speedBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+speedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedBox.Parent = mainFrame
+
+speedBox.FocusLost:Connect(function()
+    local val = tonumber(speedBox.Text)
+    if val then
+        humanoid.WalkSpeed = val
+    end
+end)
+
+-- Teleport Noktaları
+local teleportPoints = {}
+
+for i = 1, 3 do
+    local saveBtn = Instance.new("TextButton")
+    saveBtn.Size = UDim2.new(0.45, 0, 0, 30)
+    saveBtn.Position = UDim2.new(0.05, 0, 0, 110 + (i-1)*40)
+    saveBtn.Text = "Kaydet "..i
+    saveBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    saveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    saveBtn.Parent = mainFrame
+
+    local tpBtn = Instance.new("TextButton")
+    tpBtn.Size = UDim2.new(0.45, 0, 0, 30)
+    tpBtn.Position = UDim2.new(0.5, 0, 0, 110 + (i-1)*40)
+    tpBtn.Text = "Git "..i
+    tpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    tpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    tpBtn.Parent = mainFrame
+
+    saveBtn.MouseButton1Click:Connect(function()
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            teleportPoints[i] = character.HumanoidRootPart.CFrame
+        end
+    end)
+
+    tpBtn.MouseButton1Click:Connect(function()
+        if teleportPoints[i] then
+            character.HumanoidRootPart.CFrame = teleportPoints[i]
+        end
+    end)
+end
+
+-- NoClip
+local noClipEnabled = false
+local noClipBtn = Instance.new("TextButton")
+noClipBtn.Size = UDim2.new(1, 0, 0, 30)
+noClipBtn.Position = UDim2.new(0, 0, 1, -70)
+noClipBtn.Text = "NoClip OFF"
+noClipBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+noClipBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+noClipBtn.Parent = mainFrame
+
+noClipBtn.MouseButton1Click:Connect(function()
+    noClipEnabled = not noClipEnabled
+    noClipBtn.Text = noClipEnabled and "NoClip ON" or "NoClip OFF"
+end)
+
+game:GetService("RunService").Stepped:Connect(function()
+    if noClipEnabled and character and character:FindFirstChild("Humanoid") then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") and part.CanCollide then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- Toggle Butonu (Yuvarlak)
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Size = UDim2.new(0, 70, 0, 70)
+toggleBtn.Position = UDim2.new(0, 20, 0.5, -35)
+toggleBtn.Text = "Sowa Hub"
+toggleBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+toggleBtn.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(1, 0)
+corner.Parent = toggleBtn
+
+toggleBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = not mainFrame.Visible
 end)
