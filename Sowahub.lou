@@ -9,30 +9,25 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game.CoreGui
 
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0,180,0,140) -- eski boyut
+Frame.Size = UDim2.new(0,180,0,180) -- eski boyut biraz büyütüldü
 Frame.Position = UDim2.new(1, -200, 0, 50)
 Frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+Frame.Visible = true
 Frame.Parent = ScreenGui
 
--- Butonlar
-local SaveButtons = {}
-local TPButtons = {}
-local statusLabels = {}
+-- 3 Işınlanma noktası
 local tpStore = {nil, nil, nil}
-
--- Sabit Nokta
+local statusLabels = {}
 local noClipActive = false
 
--- HumanoidRootPart alma
 local function getHRP()
 	local character = player.Character or player.CharacterAdded:Wait()
 	return character:WaitForChild("HumanoidRootPart")
 end
 
--- 3 Slot Oluştur
 for i=1,3 do
 	local saveBtn = Instance.new("TextButton")
-	saveBtn.Size = UDim2.new(1/3, -2,0.33,0)
+	saveBtn.Size = UDim2.new(1/3, -4,0.3,0)
 	saveBtn.Position = UDim2.new((i-1)/3 + 0.01,0,0,0)
 	saveBtn.BackgroundColor3 = Color3.fromRGB(0,170,255)
 	saveBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -40,7 +35,7 @@ for i=1,3 do
 	saveBtn.Parent = Frame
 
 	local tpBtn = Instance.new("TextButton")
-	tpBtn.Size = UDim2.new(1/3, -2,0.33,0)
+	tpBtn.Size = UDim2.new(1/3, -4,0.3,0)
 	tpBtn.Position = UDim2.new((i-1)/3 + 0.01,0,0.33,0)
 	tpBtn.BackgroundColor3 = Color3.fromRGB(0,255,128)
 	tpBtn.TextColor3 = Color3.fromRGB(0,0,0)
@@ -48,7 +43,7 @@ for i=1,3 do
 	tpBtn.Parent = Frame
 
 	local statusLbl = Instance.new("TextLabel")
-	statusLbl.Size = UDim2.new(1/3, -2,0.34,0)
+	statusLbl.Size = UDim2.new(1/3, -4,0.34,0)
 	statusLbl.Position = UDim2.new((i-1)/3 + 0.01,0,0.66,0)
 	statusLbl.BackgroundTransparency = 1
 	statusLbl.Text = "İşinlanacak yer yok"
@@ -57,8 +52,6 @@ for i=1,3 do
 	statusLbl.TextScaled = true
 	statusLbl.Parent = Frame
 
-	SaveButtons[i] = saveBtn
-	TPButtons[i] = tpBtn
 	statusLabels[i] = statusLbl
 
 	saveBtn.MouseButton1Click:Connect(function()
@@ -102,62 +95,40 @@ RunService.Stepped:Connect(function()
 	end
 end)
 
--- Mobil ve PC sürükleme
-local dragging = false
-local dragInput
-local dragStart
-local startPos
+-- Kapat Butonu
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(1,0,0.1,0)
+closeBtn.Position = UDim2.new(0,0,0.8,0)
+closeBtn.BackgroundColor3 = Color3.fromRGB(220,30,30)
+closeBtn.Text = "Kapat"
+closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
+closeBtn.Parent = Frame
 
-Frame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = Frame.Position
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
+closeBtn.MouseButton1Click:Connect(function()
+	noClipActive = false
+	NoClipButton.Text = "NoClip: Kapalı"
+	NoClipButton.BackgroundColor3 = Color3.fromRGB(255,100,0)
+	Frame.Visible = false
 end)
 
-Frame.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
-		dragInput = input
-	end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
-		local delta = input.Position - dragStart
-		Frame.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
-		)
-	end
-end)
-
--- Yuvarlak GUI butonu
+-- Yuvarlak toggle buton
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Size = UDim2.new(0,60,0,60)
-toggleBtn.Position = UDim2.new(0,20,0,380)
+toggleBtn.Position = UDim2.new(0,20,0,250)
 toggleBtn.Text = "Sowa\nHub"
 toggleBtn.TextColor3 = Color3.fromRGB(0,0,0)
-toggleBtn.TextScaled = false
 toggleBtn.TextSize = 16
 toggleBtn.TextWrapped = true
 toggleBtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
 local tc = Instance.new("UICorner", toggleBtn); tc.CornerRadius = UDim.new(1,0)
 toggleBtn.Parent = ScreenGui
 
-Frame.Visible = false
+Frame.Visible = true
 toggleBtn.MouseButton1Click:Connect(function()
 	Frame.Visible = not Frame.Visible
 end)
 
--- Sürükleme
+-- Sürükleme fonksiyonu
 local function makeDraggable(gui)
 	local dragging, dragInput, dragStart, startPos
 	gui.InputBegan:Connect(function(input)
@@ -183,5 +154,6 @@ local function makeDraggable(gui)
 		end
 	end)
 end
+
 makeDraggable(Frame)
 makeDraggable(toggleBtn)
