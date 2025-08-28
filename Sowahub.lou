@@ -3,14 +3,15 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
 -- GUI Oluştur
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.CoreGui
+ScreenGui.Parent = playerGui
 
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0,180,0,180) -- eski boyut biraz büyütüldü
-Frame.Position = UDim2.new(1, -200, 0, 50)
+Frame.Size = UDim2.new(0,180,0,180)
+Frame.Position = UDim2.new(0.7,0,0.1,0)
 Frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
 Frame.Visible = true
 Frame.Parent = ScreenGui
@@ -121,7 +122,7 @@ toggleBtn.TextSize = 16
 toggleBtn.TextWrapped = true
 toggleBtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
 local tc = Instance.new("UICorner", toggleBtn); tc.CornerRadius = UDim.new(1,0)
-toggleBtn.Parent = ScreenGui
+toggleBtn.Parent = playerGui
 
 Frame.Visible = true
 toggleBtn.MouseButton1Click:Connect(function()
