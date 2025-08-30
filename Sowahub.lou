@@ -57,12 +57,12 @@ CloseButton.MouseButton1Click:Connect(function()
     if humanoid then humanoid.WalkSpeed = 16 end
 end)
 
--- ✅ Toggle Button (Senin görselin)
+-- ✅ Toggle Button (Yuvarlak ve görselli)
 local ToggleButton = Instance.new("ImageButton")
 ToggleButton.Size = UDim2.new(0, 60, 0, 60)
 ToggleButton.Position = UDim2.new(0, 20, 0.8, 0)
 ToggleButton.BackgroundTransparency = 1
-ToggleButton.Image = "rbxassetid://90392872805651" -- Senin ID
+ToggleButton.Image = "rbxassetid://90392872805651" 
 ToggleButton.Parent = ScreenGui
 
 local uiStroke = Instance.new("UIStroke")
