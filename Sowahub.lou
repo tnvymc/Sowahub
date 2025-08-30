@@ -1,326 +1,117 @@
--- SowaHub - Düzenli, büyük, yan yana 3 kare + Speed +/- + NoClip + Toggle
-
--- Hizmetler
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-
+local UIS = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 
--- GUI
+-- Ana GUI
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "SowaHubGUI"
 ScreenGui.Parent = game.CoreGui
 
--- Ana Panel
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 460, 0, 340)
-Frame.Position = UDim2.new(0.5, -230, 0.35, -170)
-Frame.BackgroundColor3 = Color3.fromRGB(18,18,18) -- mat siyah
+Frame.Size = UDim2.new(0, 220, 0, 250)
+Frame.Position = UDim2.new(0.7, 0, 0.3, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 Frame.BorderSizePixel = 0
+Frame.Visible = true
 Frame.Parent = ScreenGui
 
--- Köşe yuvarlama
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 16)
+corner.CornerRadius = UDim.new(0, 15)
 corner.Parent = Frame
 
--- Başlık
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -50, 0, 28)
-Title.Position = UDim2.new(0, 12, 0, 8)
+Title.Size = UDim2.new(1, -40, 0, 30)
+Title.Position = UDim2.new(0, 10, 0, 5)
 Title.BackgroundTransparency = 1
 Title.Text = "Creator TikTok: sowahub"
-Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextScaled = true
-Title.Font = Enum.Font.GothamSemibold
 Title.Parent = Frame
 
--- Yanıp sönme
-task.spawn(function()
-while Title.Parent do
-TweenService:Create(Title, TweenInfo.new(0.7), {TextTransparency = 0.5}):Play()
-task.wait(0.7)
-TweenService:Create(Title, TweenInfo.new(0.7), {TextTransparency = 0}):Play()
-task.wait(0.7)
-end
+spawn(function()
+    while true do
+        TweenService:Create(Title, TweenInfo.new(0.8), {TextTransparency = 1}):Play()
+        wait(0.8)
+        TweenService:Create(Title, TweenInfo.new(0.8), {TextTransparency = 0}):Play()
+        wait(0.8)
+    end
 end)
 
--- Kapat (alt)
-local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.new(1, -24, 0, 32)
-CloseBtn.Position = UDim2.new(0, 12, 1, -44)
-CloseBtn.BackgroundColor3 = Color3.fromRGB(220, 30, 30)
-CloseBtn.Text = "Kapat"
-CloseBtn.TextColor3 = Color3.fromRGB(255,255,255)
-CloseBtn.TextScaled = true
-CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.Parent = Frame
-local cbCorner = Instance.new("UICorner", CloseBtn); cbCorner.CornerRadius = UDim.new(0,10)
+-- Kapat Butonu
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+CloseButton.Parent = Frame
 
--- 3 KARE (yan yana)
-local SlotsHolder = Instance.new("Frame")
-SlotsHolder.Size = UDim2.new(1, -24, 0, 140)
-SlotsHolder.Position = UDim2.new(0, 12, 0, 48)
-SlotsHolder.BackgroundTransparency = 1
-SlotsHolder.Parent = Frame
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(1, 0)
+closeCorner.Parent = CloseButton
 
-local list = Instance.new("UIListLayout", SlotsHolder)
-list.FillDirection = Enum.FillDirection.Horizontal
-list.HorizontalAlignment = Enum.HorizontalAlignment.Center
-list.VerticalAlignment = Enum.VerticalAlignment.Center
-list.Padding = UDim.new(0, 12)
-
-local function mkSlotCard(index)
-local card = Instance.new("Frame")
-card.Size = UDim2.new(0, 140, 0, 140)
-card.BackgroundColor3 = Color3.fromRGB(32,32,32)
-card.Parent = SlotsHolder
-local c = Instance.new("UICorner", card); c.CornerRadius = UDim.new(0,14)
-local stroke = Instance.new("UIStroke", card); stroke.Thickness = 1; stroke.Color = Color3.fromRGB(70,70,70)
-
--- Numara  
-local num = Instance.new("TextLabel")  
-num.Size = UDim2.new(1, 0, 0, 28)  
-num.Position = UDim2.new(0,0,0,6)  
-num.BackgroundTransparency = 1  
-num.Text = "Slot "..index  
-num.TextColor3 = Color3.fromRGB(255,255,255)  
-num.TextScaled = true  
-num.Font = Enum.Font.GothamBold  
-num.Parent = card  
-
--- Kaydet  
-local save = Instance.new("TextButton")  
-save.Size = UDim2.new(0.46, 0, 0, 36)  
-save.Position = UDim2.new(0.05, 0, 1, -42)  
-save.BackgroundColor3 = Color3.fromRGB(0, 170, 255)  
-save.Text = "Kaydet"  
-save.TextColor3 = Color3.fromRGB(255,255,255)  
-save.TextScaled = true  
-save.Font = Enum.Font.GothamBold  
-save.Parent = card  
-local s1c = Instance.new("UICorner", save); s1c.CornerRadius = UDim.new(0,10)  
-
--- Git  
-local go = Instance.new("TextButton")  
-go.Size = UDim2.new(0.46, 0, 0, 36)  
-go.Position = UDim2.new(0.49, 0, 1, -42)  
-go.BackgroundColor3 = Color3.fromRGB(0, 200, 120)  
-go.Text = "Git"  
-go.TextColor3 = Color3.fromRGB(0,0,0)  
-go.TextScaled = true  
-go.Font = Enum.Font.GothamBold  
-go.Parent = card  
-local s2c = Instance.new("UICorner", go); s2c.CornerRadius = UDim.new(0,10)  
-
-return card, save, go
-
-end
-
-local tpStore = {nil, nil, nil}
-
-local function getHRP()
-local char = player.Character or player.CharacterAdded:Wait()
-return char:WaitForChild("HumanoidRootPart")
-end
-
-for i = 1, 3 do
-local card, saveBtn, goBtn = mkSlotCard(i)
-
-saveBtn.MouseButton1Click:Connect(function()  
-	local hrp = getHRP()  
-	tpStore[i] = hrp.CFrame  
-	-- kart çerçevesini yeşile boya (kayıt var göstergesi)  
-	local stroke = card:FindFirstChildOfClass("UIStroke")  
-	if stroke then stroke.Color = Color3.fromRGB(0, 200, 120) end  
-end)  
-
-goBtn.MouseButton1Click:Connect(function()  
-	if tpStore[i] then  
-		getHRP().CFrame = tpStore[i]  
-	end  
+CloseButton.MouseButton1Click:Connect(function()
+    Frame.Visible = false
+    local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then humanoid.WalkSpeed = 16 end
 end)
 
-end
+-- ✅ Toggle Button (Senin görselin)
+local ToggleButton = Instance.new("ImageButton")
+ToggleButton.Size = UDim2.new(0, 60, 0, 60)
+ToggleButton.Position = UDim2.new(0, 20, 0.8, 0)
+ToggleButton.BackgroundTransparency = 1
+ToggleButton.Image = "rbxassetid://90392872805651" -- Senin ID
+ToggleButton.Parent = ScreenGui
 
--- Speed +/- ( + yeşil, - kırmızı )
-local speedRow = Instance.new("Frame")
-speedRow.Size = UDim2.new(1, -24, 0, 40)
-speedRow.Position = UDim2.new(0, 12, 0, 200)
-speedRow.BackgroundTransparency = 1
-speedRow.Parent = Frame
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 2
+uiStroke.Color = Color3.fromRGB(255, 255, 255)
+uiStroke.Parent = ToggleButton
 
-local minusBtn = Instance.new("TextButton")
-minusBtn.Size = UDim2.new(0, 60, 0, 36)
-minusBtn.Position = UDim2.new(0, 0, 0, 2)
-minusBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50) -- kırmızı
-minusBtn.Text = "−"
-minusBtn.TextColor3 = Color3.fromRGB(255,255,255)
-minusBtn.TextScaled = true
-minusBtn.Font = Enum.Font.GothamBold
-minusBtn.Parent = speedRow
-local mC = Instance.new("UICorner", minusBtn); mC.CornerRadius = UDim.new(0,10)
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(1, 0)  -- Tam yuvarlak
+toggleCorner.Parent = ToggleButton
 
-local speedValue = Instance.new("TextLabel")
-speedValue.Size = UDim2.new(1, -140, 1, 0)
-speedValue.Position = UDim2.new(0, 70, 0, 0)
-speedValue.BackgroundColor3 = Color3.fromRGB(28,28,28)
-speedValue.Text = "Speed: 16"
-speedValue.TextColor3 = Color3.fromRGB(255,255,255)
-speedValue.TextScaled = true
-speedValue.Font = Enum.Font.GothamSemibold
-speedValue.Parent = speedRow
-local vC = Instance.new("UICorner", speedValue); vC.CornerRadius = UDim.new(0,10)
-
-local plusBtn = Instance.new("TextButton")
-plusBtn.Size = UDim2.new(0, 60, 0, 36)
-plusBtn.Position = UDim2.new(1, -60, 0, 2)
-plusBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 80) -- yeşil
-plusBtn.Text = "+"
-plusBtn.TextColor3 = Color3.fromRGB(0,0,0)
-plusBtn.TextScaled = true
-plusBtn.Font = Enum.Font.GothamBold
-plusBtn.Parent = speedRow
-local pC = Instance.new("UICorner", plusBtn); pC.CornerRadius = UDim.new(0,10)
-
-local function getHumanoid()
-local char = player.Character or player.CharacterAdded:Wait()
-return char:FindFirstChildOfClass("Humanoid")
-end
-
-local function setSpeed(v)
-local hum = getHumanoid()
-if hum then
-hum.WalkSpeed = v
-speedValue.Text = "Speed: "..tostring(v)
-end
-end
-
--- başlangıç hızı
-setSpeed(16)
-
-local step = 4
-local minSpeed, maxSpeed = 0, 200
-
-plusBtn.MouseButton1Click:Connect(function()
-local hum = getHumanoid()
-if hum then
-local nv = math.clamp(hum.WalkSpeed + step, minSpeed, maxSpeed)
-setSpeed(nv)
-end
+-- ✅ Toggle işlevi
+ToggleButton.MouseButton1Click:Connect(function()
+    Frame.Visible = not Frame.Visible
 end)
 
-minusBtn.MouseButton1Click:Connect(function()
-local hum = getHumanoid()
-if hum then
-local nv = math.clamp(hum.WalkSpeed - step, minSpeed, maxSpeed)
-setSpeed(nv)
-end
-end)
+-- ✅ Sürüklenebilirlik Fonksiyonu
+local function makeDraggable(obj)
+    local dragging = false
+    local dragInput, mousePos, framePos
 
--- NoClip
-local noclipRow = Instance.new("Frame")
-noclipRow.Size = UDim2.new(1, -24, 0, 38)
-noclipRow.Position = UDim2.new(0, 12, 0, 246)
-noclipRow.BackgroundTransparency = 1
-noclipRow.Parent = Frame
+    obj.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            mousePos = input.Position
+            framePos = obj.Position
 
-local noclipBtn = Instance.new("TextButton")
-noclipBtn.Size = UDim2.new(0, 140, 0, 34)
-noclipBtn.Position = UDim2.new(0, 0, 0, 2)
-noclipBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-noclipBtn.Text = "NoClip: Kapalı"
-noclipBtn.TextColor3 = Color3.fromRGB(255,255,255)
-noclipBtn.TextScaled = true
-noclipBtn.Font = Enum.Font.GothamBold
-noclipBtn.Parent = noclipRow
-local nC = Instance.new("UICorner", noclipBtn); nC.CornerRadius = UDim.new(0,10)
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
 
-local noClipActive = false
-noclipBtn.MouseButton1Click:Connect(function()
-noClipActive = not noClipActive
-noclipBtn.Text = "NoClip: "..(noClipActive and "Açık" or "Kapalı")
-end)
+    obj.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
 
-RunService.Stepped:Connect(function()
-if noClipActive and player.Character then
-for _, part in ipairs(player.Character:GetDescendants()) do
-if part:IsA("BasePart") then
-part.CanCollide = false
-end
-end
-end
-end)
-
--- Toggle (Yuvarlak, beyaz)
-local Toggle = Instance.new("TextButton")
-Toggle.Size = UDim2.new(0, 68, 0, 68)
-Toggle.Position = UDim2.new(0, 20, 0.8, 0)
-Toggle.BackgroundColor3 = Color3.fromRGB(255,255,255)
-Toggle.Text = "Sowa\nHub"
-Toggle.TextColor3 = Color3.fromRGB(0,0,0)
-Toggle.TextScaled = true
-Toggle.Font = Enum.Font.GothamBold
-Toggle.Parent = ScreenGui
-local tCorner = Instance.new("UICorner", Toggle); tCorner.CornerRadius = UDim.new(1,0)
-local tStroke = Instance.new("UIStroke", Toggle); tStroke.Thickness = 2; tStroke.Color = Color3.fromRGB(0,0,0)
-
--- Göster/Gizle
-local visible = true
-Toggle.MouseButton1Click:Connect(function()
-visible = not visible
-Frame.Visible = visible
-end)
-
--- Draggable (PC + mobil)
-local dragging, dragInput, dragStart, startPos
-local function makeDraggable(gui)
-gui.InputBegan:Connect(function(input)
-if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-dragging = true
-dragStart = input.Position
-startPos = gui.Position
-input.Changed:Connect(function()
-if input.UserInputState == Enum.UserInputState.End then
-dragging = false
-end
-end)
-end
-end)
-gui.InputChanged:Connect(function(input)
-if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-dragInput = input
-end
-end)
-UserInputService.InputChanged:Connect(function(input)
-if input == dragInput and dragging then
-local delta = input.Position - dragStart
-gui.Position = UDim2.new(
-startPos.X.Scale,
-startPos.X.Offset + delta.X,
-startPos.Y.Scale,
-startPos.Y.Offset + delta.Y
-)
-end
-end)
+    UIS.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - mousePos
+            obj.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
+        end
+    end)
 end
 
+-- ✅ Hem Frame hem Toggle butonunu sürüklenebilir yap
 makeDraggable(Frame)
-makeDraggable(Toggle)
-
--- Kapat davranışı: hız sıfırla + NoClip kapat + GUI’yi kapat
-CloseBtn.MouseButton1Click:Connect(function()
-local hum = getHumanoid()
-if hum then hum.WalkSpeed = 16 end
-noClipActive = false
-if player.Character then
-for _, part in ipairs(player.Character:GetDescendants()) do
-if part:IsA("BasePart") then
-part.CanCollide = true
-end
-end
-end
-ScreenGui:Destroy()
-end)
+makeDraggable(ToggleButton)
